@@ -18,10 +18,12 @@ A lightweight calculator with a React + Vite frontend and a Java HTTP API.
    npm run dev
    ```
 
-3. Open the local URL printed by Vite,
+3. Open the local URL printed by Vite, usually `http://localhost:5173`.
 
 ## Operations
 
 Add, subtract, multiply, divide, and percent are supported. Percent calculates the first number as a percentage of the second; for example, `25 percent 80` returns `20`.
+
+Each input is limited to 15 digits (the decimal point and minus sign do not count). Longer numbers are rejected with a prompt to shorten them, preventing loss of precision.
 
 The API endpoint is `GET /api/calculate?operation=add&a=2&b=3`. Supported operation values are `add`, `subtract`, `multiply`, `divide`, and `percent`. Successful responses contain a numeric `result`; invalid requests, unsupported operations, and division by zero return an error message with HTTP 400.
