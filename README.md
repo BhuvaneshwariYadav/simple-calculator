@@ -18,7 +18,7 @@ A lightweight calculator with a React + Vite frontend and a Java HTTP API.
    npm run dev
    ```
 
-3. Open the local URL printed by Vite, usually `http://localhost:5173`.
+3. Open the local URL printed by Vite,
 
 ## Operations
 
