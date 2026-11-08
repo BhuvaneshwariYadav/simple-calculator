@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 
+const MAX_INPUT_DIGITS = 15;
+const INCOMPLETE_NUMBER_PATTERN = /^-?\d*\.?\d*$/;
+const NUMBER_PATTERN = /^-?(?:\d+(?:\.\d*)?|\.\d+)$/;
+
 const operations = [
   { value: "add", label: "Add", symbol: "+" },
   { value: "subtract", label: "Subtract", symbol: "−" },
@@ -12,6 +16,16 @@ function formatNumber(value) {
   return new Intl.NumberFormat(undefined, { maximumFractionDigits: 8 }).format(value);
 }
 
+function getInputError(value) {
+  if (!INCOMPLETE_NUMBER_PATTERN.test(value)) {
+    return "Enter a number using digits, an optional decimal point, and an optional minus sign.";
+  }
+  if (value.replace(/\D/g, "").length > MAX_INPUT_DIGITS) {
+    return `Numbers can contain at most ${MAX_INPUT_DIGITS} digits. Shorten the number to continue.`;
+  }
+  return "";
+}
+
 export default function App() {
   const [first, setFirst] = useState("");
   const [second, setSecond] = useState("");
@@ -20,6 +34,17 @@ export default function App() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  function updateNumber(value, setValue) {
+    const inputError = getInputError(value);
+    if (inputError) {
+      setError(inputError);
+      return;
+    }
+    setValue(value);
+    setError("");
+    setResult(null);
+  }
+
   async function calculate(event) {
     event.preventDefault();
     setError("");
@@ -27,6 +52,15 @@ export default function App() {
 
     if (first.trim() === "" || second.trim() === "") {
       setError("Enter both numbers to continue.");
+      return;
+    }
+    if (!NUMBER_PATTERN.test(first) || !NUMBER_PATTERN.test(second)) {
+      setError("Enter a complete number in both fields before calculating.");
+      return;
+    }
+    const inputError = getInputError(first) || getInputError(second);
+    if (inputError) {
+      setError(inputError);
       return;
     }
 
@@ -70,13 +104,16 @@ export default function App() {
           <label className="field-label" htmlFor="first-number">First number</label>
           <input
             id="first-number"
-            type="number"
-            step="any"
+            type="text"
+            inputMode="decimal"
             value={first}
-            onChange={(event) => setFirst(event.target.value)}
+            onChange={(event) => updateNumber(event.target.value, setFirst)}
             placeholder="e.g. 24"
             autoComplete="off"
           />
+          <p className="helper-text">
+            Each number is limited to {MAX_INPUT_DIGITS} digits; the decimal point and minus sign don’t count.
+          </p>
 
           <fieldset className="operation-field">
             <legend className="field-label">Operation</legend>
@@ -99,10 +136,10 @@ export default function App() {
           <label className="field-label" htmlFor="second-number">Second number</label>
           <input
             id="second-number"
-            type="number"
-            step="any"
+            type="text"
+            inputMode="decimal"
             value={second}
-            onChange={(event) => setSecond(event.target.value)}
+            onChange={(event) => updateNumber(event.target.value, setSecond)}
             placeholder="e.g. 6"
             autoComplete="off"
           />
