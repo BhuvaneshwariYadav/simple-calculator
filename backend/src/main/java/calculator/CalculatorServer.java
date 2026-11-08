@@ -37,8 +37,8 @@ public final class CalculatorServer {
         try {
             Map<String, String> parameters = parseQuery(exchange.getRequestURI().getRawQuery());
             String operation = required(parameters, "operation");
-            double first = Double.parseDouble(required(parameters, "a"));
-            double second = Double.parseDouble(required(parameters, "b"));
+            double first = Calculator.parseInput(required(parameters, "a"));
+            double second = Calculator.parseInput(required(parameters, "b"));
             double result = Calculator.calculate(operation, first, second);
             sendJson(exchange, 200, "{\"result\":" + result + "}");
         } catch (IllegalArgumentException exception) {
